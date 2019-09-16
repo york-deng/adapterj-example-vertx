@@ -19,7 +19,7 @@ An example based on Standard HTML Template (without any special syntax, tags, at
 ```
 cd adapterj-example-vertx
 mvn clean package   
-vertx run com.adapterj.example.vertx.Example -cp .:target/adapterj-example-vertx-1.0.0-all.jar   
+vertx run com.adapterj.example.vertx.SimpleVerticle -cp .:target/adapterj-example-vertx-1.0.0-all.jar   
 ```
 
 ## URL

@@ -69,6 +69,8 @@ public class OrmOpenHelper {
     
     private static final String JDBC_H2_CONNECTION_URL = JDBC_H2_CONNECTION_URL_PREFIX + DATABASE_NAME;
     
+    private static final String JDBC_H2_SQL_INIT = "/target/classes/adapterj-example-h2.sql";
+    
     private static final String JDBC_MYSQL_CONNECTION_URL_PREFIX = "jdbc:mysql:";
 
     private static final String JDBC_MYSQL_CONNECTION_URL = JDBC_MYSQL_CONNECTION_URL_PREFIX + "//" + HOST + ":" + PORT + "/" + DATABASE_NAME + "?useUnicode=true&characterEncoding=utf8&user=" + DATABASE_USER + "&password=" + DATABASE_PASSWORD + "&autoReconnect=true";
@@ -113,7 +115,7 @@ public class OrmOpenHelper {
     protected OrmOpenHelper(ConnectionSource context) throws SQLException {
         _context = context;
         final int nowVer = schema();
-        if (nowVer == 0 || _jdbcUrl.startsWith(JDBC_H2_CONNECTION_URL_PREFIX)) {
+        if (nowVer == 0) {
             onCreate(_context);
         } else if (newVer > 1) {
             onUpgrade(_context, nowVer, newVer);
@@ -137,8 +139,8 @@ public class OrmOpenHelper {
         try {
             TableUtils.createTable(conn, Version.class);
             TableUtils.createTable(conn, Source.class);
-            TableUtils.createTable(conn, Version1.class);
-            TableUtils.createTable(conn, Source1.class);
+            //TableUtils.createTable(conn, Version1.class);
+            //TableUtils.createTable(conn, Source1.class);
         } catch (SQLException e) {
             StackTraceElement t = (new Throwable()).getStackTrace()[0];
             String f = "(%s:%d) %s: SQLException: ";
@@ -243,16 +245,16 @@ public class OrmOpenHelper {
             if (!exist) map.put(clazz, (D) DaoManager.createDao(_context, Source.class));
             return (D) map.get(Source.class);
         }
-        if (Version1.class.equals(clazz)) {
-            final boolean exist = map.containsKey(Version1.class);
-            if (!exist) map.put(clazz, (D) DaoManager.createDao(_context, Version1.class));
-            return (D) map.get(Version.class);
-        }
-        if (Source1.class.equals(clazz)) {
-            final boolean exist = map.containsKey(Source1.class);
-            if (!exist) map.put(clazz, (D) DaoManager.createDao(_context, Source1.class));
-            return (D) map.get(Source1.class);
-        }
+        //if (Version1.class.equals(clazz)) {
+        //    final boolean exist = map.containsKey(Version1.class);
+        //    if (!exist) map.put(clazz, (D) DaoManager.createDao(_context, Version1.class));
+        //    return (D) map.get(Version.class);
+        //}
+        //if (Source1.class.equals(clazz)) {
+        //    final boolean exist = map.containsKey(Source1.class);
+        //    if (!exist) map.put(clazz, (D) DaoManager.createDao(_context, Source1.class));
+        //    return (D) map.get(Source1.class);
+        //}
         return (null);
     }
 
@@ -330,34 +332,33 @@ public class OrmOpenHelper {
 	    final Connection conn = getConnection();
             if (DEBUG) {
                 StackTraceElement t = (new Throwable()).getStackTrace()[0];
-                String f = "(%s:%d) %s: conn is \"%s\"";
+                String f = "(%s:%d) %s: conn is: %s";
                 Log.i(TAG, String.format(f, t.getFileName(), t.getLineNumber(), t.getMethodName(), conn));
             }
 	    
 	    final String dir = OrmOpenHelper.class.getClassLoader().getResource("").getPath();
 	    if (DEBUG) {
 		StackTraceElement t = (new Throwable()).getStackTrace()[0];
-		String format = "(%s:%d) %s: base dir is %s";
+		String format = "(%s:%d) %s: base dir is: %s";
 		Log.i(TAG, String.format(format, t.getFileName(), t.getLineNumber(), t.getMethodName(), dir));
 	    }
 	    
-	    final InputStream in = new FileInputStream(dir + "adapterj-example-h2.sql");
+	    final InputStream in = new FileInputStream(dir + JDBC_H2_SQL_INIT);
 	    if (DEBUG) {
                 StackTraceElement t = (new Throwable()).getStackTrace()[0];
-                String f = "(%s:%d) %s: in is %s";
+                String f = "(%s:%d) %s: in is: %s";
                 Log.i(TAG, String.format(f, t.getFileName(), t.getLineNumber(), t.getMethodName(), in));
             }
 	    
-	    final Reader reader = new InputStreamReader(new FileInputStream(dir + "adapterj-example-h2.sql"));
+	    final Reader reader = new InputStreamReader(in);
             if (DEBUG) {
                 StackTraceElement t = (new Throwable()).getStackTrace()[0];
-                String f = "(%s:%d) %s: reader is \"%s\"";
+                String f = "(%s:%d) %s: reader is: \"%s\"";
                 Log.i(TAG, String.format(f, t.getFileName(), t.getLineNumber(), t.getMethodName(), reader));
             }
 	    
 	    RunScript.execute(conn, reader);
         }
-        
     }
 
     // For test only
