@@ -24,7 +24,7 @@ cd ..
 git clone https://github.com/york-deng/adapterj-example-vertx.git
 cd adapterj-example-vertx
 mvn clean package   
-java -cp .:target/adapterj-example-vertx-1.0.0-all.jar com.adapterj.example.vertx.SimpleVerticle   
+vertx run com.adapterj.example.vertx.SimpleVerticle -cp .:target/adapterj-example-vertx-1.0.0-all.jar   
 ```
 
 ## URL
